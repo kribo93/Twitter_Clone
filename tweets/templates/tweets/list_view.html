@@ -1,22 +1,99 @@
-{% include "tweets/search_form.html" %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>List</title>
-</head>
-<body>
-{% for obj in object_list %}
-    {{ obj.content }} </br>
-    {{ obj.user }} </br>
-    {{ obj.timestamp|timesince }} </br>
-    </br>
-{% empty %}
-    {% if request.GET.q %}
-    <p>No tweets fount.</p>
-    {% else %}
-    <p>No tweets yet.</p>
-    {% endif %}
-{% endfor %}
-</body>
-</html>
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load recommended %}
+{% load static %}
+
+{% block title %} Tweets list{% endblock title %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-3 col-md-3 col-3">
+            <div class="dashboard-left">
+                <div class="dashboard-profile">
+                    <div class="banner"></div>
+                    <div class="avatar">
+                        <div class="ProfileAvatar">
+                            {% if request.user.profile.photo %}
+                                {% thumbnail request.user.profile.photo "68x68" crop="100% center" as im %}
+                                    <a href="{% url 'profiles:detail' request.user.username %}" >
+                                        <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                                    </a>
+
+                                {% endthumbnail %}
+                            {% else %}
+                                <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 68px; height: 68px">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <div class="col-md-6 offset-md-4">
+                        <a href="{% url 'profiles:detail' request.user.username %}" ><p class="username">{{ request.user }}</p></a>
+                    </div>
+                    <div class="profile-statistics">
+                        <div class="container">
+                            <div class="row">
+                            <div class="col-lg-6 tweets">
+                                <span>Tweets</span>
+                                <p>{{ request.user.profile.get_tweets.count }}</p>
+                            </div>
+                            <div class="col-lg-6 following">
+                                <span>Following</span>
+                                <p>{{ request.user.profile.get_following.count }}</p>
+                            </div>
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-left-footer">
+                <hr/>
+                <br/>
+                <p class="lead">Recommended Users</p>
+                {% recommended request.user %}
+            </div>
+
+        </div>
+        <div class="col-sm-6 col-md-6 col-6 content-block">
+            {% if not request.GET.q %}
+            <div class="form-block" id="tweet-form-block">
+                {% include 'tweets/form.html' with form=create_form action_url=create_url btn_title='Tweet' form_class='tweet-form' %}
+            </div>
+                <hr/>
+            {% endif %}
+
+            <div class="" id="tweet-container" data-url="/api/tweet/">
+
+            </div>
+            <a href="#" id="loadmore"><div><span class="offset-4">Load More Tweets</span></div></a>
+        </div>
+        <div class="col-sm-3 col-md-3 col-3">
+            <div class="dashboard-right">
+                <div class="container">
+                    <span class="footer-text">&copy; 2018 TwitterClone</span>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">About</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Terms</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Privacy policy</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Cookies</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Ads info</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+
+{% block script %}
+
+<script>
+$(document).ready(function () {
+    loadTweetContainer("tweet-container");
+})
+</script>
+
+{% endblock script %}

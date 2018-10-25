@@ -1,16 +1,32 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.views import View
+from django.views.generic import (
+                    DetailView,
+                    ListView,
+                    UpdateView,
+                    DeleteView,
+                    CreateView
+                )
 
-from django.views.generic import DetailView, ListView, UpdateView, DeleteView, CreateView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
 
-from .models import Tweet
+from .models import Tweet, TweetMedia
 from .forms import TweetModelForm
 from .mixins import OwnUserMixin
 
 # Create your views here.
+
+class RetweetView(View):
+    def get(self, request, pk, *args, **kwargs):
+        tweet = get_object_or_404(Tweet, pk=pk)
+        if request.user.is_authenticated():
+            new_tweet = Tweet.objects.retweet(request.user, tweet)
+            return HttpResponseRedirect("/")
+        return HttpResponseRedirect(tweet.get_absolute_url())
 
 # Create
 class TweetCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
@@ -33,7 +49,8 @@ class TweetDetailView(DetailView):
     # def get_object(self, queryset=queryset):
     #     return Tweet.objects.get(id=id)
 
-class TweetListView(ListView):
+
+class TweetListView(LoginRequiredMixin, ListView):
     model = Tweet
     template_name = "tweets/list_view.html"
 
@@ -45,6 +62,12 @@ class TweetListView(ListView):
                 Q(content__icontains=query) |
                 Q(user__username__icontains=query))
         return qs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TweetListView, self).get_context_data(*args, **kwargs)
+        context['create_form'] = TweetModelForm()
+        context['create_url'] = reverse_lazy("tweet:create")
+        return context
 
 # Update
 class TweetUpdateView(SuccessMessageMixin, LoginRequiredMixin, OwnUserMixin, UpdateView):

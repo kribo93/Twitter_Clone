@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'crispy_forms',
+    'accounts',
+    'tweets',
+    'hashtags',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +56,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tweeterclone.urls'
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
 
 TEMPLATES = [
     {

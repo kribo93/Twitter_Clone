@@ -1,0 +1,592 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Tweetme co.{% endblock title%}</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'css/lightbox.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+
+    <style>
+        .red-color {
+            color: red;
+        }
+        .grey-color {
+            color: grey;
+        }
+        .media-focus {
+            background-color: #eaeaea88;
+        }
+    </style>
+</head>
+<body>
+<div class="page-outer">
+    {% include 'navbar.html' %}
+
+    {% block headProfileDetail %}
+    {% endblock headProfileDetail %}
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+{% include 'reply-modal.html' %}
+
+
+</div>
+
+{#<script src="{% static 'js/csrf.js' %}"></script>#}
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+<script src="{% static 'js/lightbox.js' %}"></script>
+
+<script>
+
+    function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function loadTweetContainer(tweetContainerID, fetchOneId) {
+    var query = getParameterByName('q');
+    var tweetList = [];
+    var nextTweetUrl;
+    var tweetContainer;
+    if (tweetContainerID){
+        tweetContainer = $("#"+tweetContainerID);
+    } else {
+        tweetContainer =$("tweet-container")
+    }
+    var initialUrl = tweetContainer.attr("data-url") || "/api/tweet/";
+
+    $(document.body).on("click", ".tweet-like", function (e){
+        e.preventDefault();
+        var this_ = $(this);
+        var likes_count = this_.find("#likes_count");
+        var likes;
+        var heart = this_.find("#heart");
+        var tweetId = this_.attr("data-id");
+        var likedUrl = '/api/tweet/' + tweetId + "/like/";
+        $.ajax({
+            method : "GET",
+            url: likedUrl,
+            success: function (data) {
+                if (data.liked){
+                    heart.removeClass(' fa-heart-o grey-color');
+                    heart.addClass('fa-heart red-color');
+                    likes = Number(likes_count.text()) +1;
+                    likes_count.text(likes);
+
+                } else {
+                    heart.removeClass('fa-heart red-color');
+                    heart.addClass('fa-heart-o grey-color');
+                    likes = Number(likes_count.text()) -1;
+                    likes_count.text(likes);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                console.log(error)
+            }
+            
+            
+        })
+    });
+
+    $(document.body).on("click", ".tweet-reply", function (e){
+        e.preventDefault();
+        console.log("clicked");
+        var this_ = $(this);
+        var parentId = this_.attr("data-id");
+        var username = this_.attr("data-user");
+        var replyModal = $("#replyModal");
+        var form_m;
+        var content = this_.parent().parent().parent().find(".content").text();
+        replyModal.modal({});
+        $("#replyModal textarea").after("<input type='hidden' value='" + parentId + "' name='parent_id' />");
+        $("#replyModal textarea").after("<input type='hidden' value='" + true + "' name='reply' />");
+        $("#replyModal textarea").val("@" + username + " ");
+        $("#replyModal #replyModalLabel").text("Reply to " + content);
+        replyModal.on("shown.bs.modal", function () {
+            $('textarea').focus();
+            form_m = $("#tweet-form-master").detach();
+           // imagePreview()
+        });
+         replyModal.on("hidden.bs.modal", function () {
+            $("#tweet-form-block").append(form_m);
+
+        });
+    });
+
+    $(document.body).on("click", ".retweetBtn", function (e){
+        e.preventDefault();
+        console.log("clicked");
+        var url="/api" + $(this).attr("href");
+
+        $.ajax({
+            method: "GET",
+            url: url,
+            success: function (data) {
+                console.log(data);
+                //if username is in the API path...let's ignore
+                if (initialUrl == "/api/tweet/"){
+                    attachTweet(data, true, true);
+                    AttachMedia(data);
+                    updateHashLinks();
+                }
+            },
+            error: function (data) {
+                console.log("error");
+                console.log(data)
+            }
+
+        })
+    });
+
+    function updateHashLinks() {
+        $(".content").each(function (data) {
+            var hashtagRegex = /(^|\s)#([\w\d-]+)/g;
+            var usernameRegex = /(^|\s)@([\w\d-]+)/g;
+            var curentHtml = $(this).html();
+            var newText;
+            newText = curentHtml.replace(hashtagRegex, "$1<a href='/tags/$2/'>#$2</a>");
+            newText = newText.replace(usernameRegex, "$1 @<a href='/$2/'>$2</a>");
+            $(this).html(newText);
+
+            // create hashtag in database
+        })
+    }
+
+    function formatTweet(tweetValue) {
+
+        var preContent;
+        var container;
+        var tweetContent;
+        var tweetHeader;
+        var tweetTextContainer;
+        var tweetFooter;
+        var tweetMediaContainer;
+        var tweetUser = tweetValue.user;
+        var isReply = tweetValue.reply;
+        var replyId = tweetValue.id;
+        var tweetId = tweetValue.id;
+        var avatarMini;
+
+        if (tweetValue.parent){
+            replyId = tweetValue.parent.id;
+            tweetId = tweetValue.parent.id
+        }
+        var openingContainerDiv = "<div class='tweet'>";
+        if (tweetValue.id == fetchOneId){
+            openingContainerDiv = "<div class='media media-focus'>";
+            setTimeout(function () {
+                $('.media-focus').css("background-color", '#fff')
+            }, 2000)
+        }
+
+        tweetMediaContainer = "<div class='row' id='media_"+tweetValue.id+"'><div class='main-media col-lg-8 col-md-8 col-sm-8' id='tweetId_"+tweetValue.id+"'></div>" +
+            "<div class='secondary-media col-lg-4 col-md-4 col-sm-4' id='tweetId_"+tweetValue.id+"_secondary'></div></div>";
+
+        if (tweetValue.parent && !isReply){
+            // there is a retweet
+            tweetValue = tweetValue.parent;
+            preContent = "<div class='pre-content'><i class='fa fa-retweet retweet-icon grey-color' aria-hidden='true'></i>"+
+                "<span class='grey-color'>" + tweetUser.username + " Retweeted</span></div>";
+
+        } else if(tweetValue.parent && isReply){
+            // there is a reply
+            preContent = "<div class='pre-content'><i class='fa fa-reply retweet-icon grey-color' aria-hidden='true'></i><span class='grey-color'>Reply to @" +
+                 tweetValue.parent.user.username + "</span></div>"
+        }
+
+        var icon = "<i class='fa fa-heart-o fa-lg grey-color' aria-hidden='true' id='heart'><span id='likes_count'>"+tweetValue.likes+"</span></i>";
+        if  (tweetValue.did_like ){
+            icon = "<i class='fa fa-heart fa-lg red-color' aria-hidden='true' id='heart'><span id='likes_count'>"+tweetValue.likes+"</span></i>";
+        }
+
+        if (tweetValue.user.photo.photo){
+            avatarMini = "<img src='"+ tweetValue.user.photo.photo+"' class='rounded-circle avatar-mini'>"
+        } else {
+            avatarMini = "<img src='/static/images/user_default.png' class='rounded-circle avatar-mini'>"
+        }
+
+
+
+
+        tweetHeader = "<div class='tweetHeader'><a href='"+ tweetValue.user.url + "'>"+
+            "<span class='username'>"+ tweetValue.user.username +"</span>" +
+            avatarMini +"</a> " + "<span class='grey-color'>"+ tweetValue.date_display +"</span></div>";
+
+        tweetTextContainer = "<div class='tweetTextContainer'><span class='content'>" + tweetValue.content +
+            "</span></div>";
+
+        tweetFooter = "<div class='tweetFooter row col-lg-6 col-md-6'>" + "<div class='view col-lg-3 col-md-3'>"+
+            "<a href='/tweet/"+ tweetId + "' class='view-button'><i class='fa fa-eye fa-lg grey-color' aria-hidden='true'></i></a></div> " +
+                "<div class='retweet col-lg-3 col-md-3'><a class='retweetBtn' href='/tweet/"+tweetValue.id + "/retweet/'><i class='fa fa-retweet fa-lg grey-color' aria-hidden='true'></i></a></div>" +
+            "<div class='like col-lg-3 col-md-3'><a href='#' class='tweet-like' data-id='" + tweetValue.id + "''>"+icon +"  </a></div>" +
+                "<div class='reply col-lg-3 col-md-3'><a href='#' " +"class='tweet-reply' data-user= '"+ tweetValue.user.username +"' data-id='" +
+                replyId + "' data-toggle='modal'><i class='fa fa-comment-o fa-lg grey-color' aria-hidden='true'></i></a></div></div>";
+
+
+
+        tweetContent = tweetHeader + tweetTextContainer + tweetMediaContainer + tweetFooter;
+
+        if (preContent){
+            container = openingContainerDiv + preContent +"<div class=\'media-body\' >"+ tweetContent+"</div></div><hr/>";
+
+        }else{
+            container = openingContainerDiv + "<div class=\'media-body\' >"+ tweetContent+"</div></div><hr/>";
+        }
+        return container
+    }
+
+    function attachTweet(tweetValue, prepend) {
+
+        var tweetFormattedHtml;
+        tweetFormattedHtml = formatTweet(tweetValue);
+
+        if (prepend==true){
+            tweetContainer.prepend(tweetFormattedHtml)
+        } else {
+            tweetContainer.append(tweetFormattedHtml)
+        }
+
+    }
+
+    function parseTweets() {
+        if (tweetList == 0) {
+            tweetContainer.text("No tweets currently  found.")
+        } else {
+        // tweets exists, parse & display them
+        $.each(tweetList, function (key, value) {
+            var tweetKey = key;
+            if (value.parent){
+                attachTweet(value, false, true);
+            } else {
+                attachTweet(value);
+            }
+            })
+        }
+    }
+
+    function AttachMedia(data) {
+
+        var receivingElement;
+        var idPrefix = 'tweetId_';
+        var secondary_receivingElement;
+        var media_container;
+        var media_data;
+
+        function Attach(obj) {
+            var reply = obj.reply;
+            media_container = document.getElementById("media_"+(obj.id));
+            receivingElement = document.getElementById(idPrefix + (obj.id));
+            secondary_receivingElement = document.getElementById(idPrefix + (obj.id)+"_secondary");
+            if (obj.parent && !reply) {
+                    media_data = obj.parent.media;
+             }
+            else {
+                    media_data = obj.media;
+            }
+
+            if (receivingElement && media_data) {
+                function AttachFiles(media_data, ContainerClass, receivingPrefix){
+                    media_container.classList.add(ContainerClass);
+                    var first = media_data[0];
+                    var a = document.createElement('a');
+                    var img = new Image();
+                    a.href = first.media_file;
+                    a.setAttribute("data-lightbox", receivingPrefix);
+                    img.src = first.media_file;
+                    img.setAttribute("class", "img-fluid");
+                    a.append(img);
+                    receivingElement.appendChild(a);
+                    media_data.splice(0, 1);
+                    for (var i = 0; i < media_data.length; i++) {
+                        a = document.createElement('a');
+                        img = new Image();
+                        a.href = media_data[i].media_file;
+                        a.setAttribute("data-lightbox", receivingPrefix);
+                        img.src = media_data[i].media_file;
+                        img.setAttribute("class", "Image2");
+                        a.append(img);
+                        var div = document.createElement('div');
+                        div.append(a);
+                        secondary_receivingElement.appendChild(div);
+                        }
+                    }
+                var receivingPrefix =  idPrefix + (obj.id);
+                if (media_data.length==1){
+                    media_container.classList.add("AdaptiveMediaContainer");
+                    media_container.classList.remove("row");
+                    for (var i = 0; i < media_data.length; i++) {
+                        var div = document.createElement('div');
+                        var a = document.createElement('a');
+                        var img = new Image();
+                        div.classList.add("PhotoSingle");
+                        a.href = media_data[i].media_file;
+                        a.setAttribute("data-lightbox", receivingPrefix);
+                        img.src = media_data[i].media_file;
+                        img.setAttribute("class", "img-OnlyOne img-fluid");
+                        a.append(img);
+                        receivingElement.remove();
+                        secondary_receivingElement.remove();
+                        media_container.appendChild(div);
+                        div.appendChild(a)
+                }
+
+                } else if (media_data.length==2){
+                   AttachFiles(media_data, 'PhotoDouble', receivingPrefix);
+                }else if(media_data.length==3){
+                   AttachFiles(media_data, 'PhotoTriple', receivingPrefix);
+                }else if(media_data.length==4){
+                   AttachFiles(media_data, 'PhotoQuad', receivingPrefix);
+                }
+            }
+        }
+        if(Array.isArray(data)){
+             data.forEach(function (object) {
+                 Attach(object);
+             });
+        }else {
+             Attach(data);
+            }
+
+    }
+
+    function fetchTweets(url) {  //показать(прикрепить) твиты на страницк
+        var fetchurl;
+        if (!url){
+            fetchurl = initialUrl
+        }else{
+            fetchurl = url;
+        }
+        $.ajax({
+            url:fetchurl,
+            data:{
+                "q":query
+            },
+            method: "GET",
+            success: function (data) {
+                //console.log(data.results);
+                //tweetList = data; //now work with pagination
+                tweetList = data.results; //because we added pagination
+                if (data.next){
+                    nextTweetUrl = data.next; //for pagination
+                } else{
+                    $('#loadmore').css('display', 'none')
+                }
+                parseTweets();
+                updateHashLinks();
+                AttachMedia(data.results);
+
+            },
+            error: function (data) {
+                console.log("error");
+                console.log(data)
+            }
+        });
+    }
+
+
+    function fetchSingle(fetchOneId) {  //показать(прикрепить) один твит на страницу
+        var fetchDetailUrl = '/api/tweet/'+ fetchOneId + '/';
+
+        $.ajax({
+            url:fetchDetailUrl,
+            method: "GET",
+            success: function (data) {
+                tweetList = data.results;
+                parseTweets();
+                updateHashLinks();
+                AttachMedia(data.results);
+            },
+            error: function (data) {
+                console.log("error");
+                console.log(data)
+            }
+        });
+    }
+
+    if (fetchOneId){
+        fetchSingle(fetchOneId)
+    } else {
+        fetchTweets();
+    }
+    $('#loadmore').click(function (event) {
+        event.preventDefault();
+        //load more items
+        if (nextTweetUrl) {
+            fetchTweets(nextTweetUrl)
+        }
+    });
+
+    var charsStart = 140;
+    var charsCurrent = 0;
+
+    $(".tweet-form").append("<span id='tweetCharsLeft' style='margin-left:20px' >" + charsStart + " left</span>");
+
+
+    $(".tweet-form input[type='file']").change(function () {
+        if (typeof (FileReader) != "undefined") {
+            var dvPreview = $("#gallery");
+            dvPreview.html("");
+            var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.jpg|.jpeg|.gif|.png|.bmp)$/;
+            $($(this)[0].files).each(function () {
+                var file = $(this);
+                if (regex.test(file[0].name.toLowerCase())) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var img = $("<img class='thumbnail rounded'/>");
+                        img.attr("src", e.target.result);
+                        dvPreview.append(img);
+                    };
+                    reader.readAsDataURL(file[0]);
+                } else {
+                    alert(file[0].name + " is not a valid image file.");
+                    dvPreview.html("");
+                    return false;
+                }
+            });
+        } else {
+            alert("This browser does not support HTML5 FileReader.");
+        }
+        });
+
+
+
+
+    $(".tweet-form textarea").keyup(function (event) {
+
+        var tweetValue = $(this).val();
+        charsCurrent = charsStart - tweetValue.length;
+        var spanChars =  $(this).parent().parent().parent().find("#tweetCharsLeft");
+        spanChars.text(charsCurrent);
+        if (charsCurrent > 0) {
+            //remove classes
+            spanChars.removeClass("grey-color");
+            spanChars.removeClass("red-color")
+        } else if (charsCurrent == 0){
+            //add gray class
+            spanChars.removeClass("red-color");
+            spanChars.addClass("grey-color")
+        } else if (charsCurrent < 0){
+            //red class
+            spanChars.removeClass("grey-color");
+            spanChars.addClass("red-color")
+        }
+    });
+
+    var $crf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+
+
+
+
+    $(".tweet-form").submit(function (event) {
+        event.preventDefault();
+
+        var this_ = $(this);
+        var formData = new FormData();
+
+        var file_data = $('input[type="file"]')[0].files; // for multiple files
+         console.log(file_data);
+        if (parseInt(file_data.length)>4){
+            alert("You can only upload a maximum of 4 files");
+            $(".tweet-form").find('#gallery').empty()
+        }
+        else{
+            for(var i = 0;i<file_data.length;i++){
+            formData.append("file_"+i, file_data[i]);
+            }
+        }
+        var other_data = this_.serializeArray();
+        $.each(other_data,function(key,input){
+            formData.append(input.name,input.value);
+            });
+        if (charsCurrent >=0 && parseInt(file_data.length)<5) {
+            $.ajax({
+            headers:{"X-CSRFToken": $crf_token},
+            url:"/api/tweet/upload/",
+            data:formData,
+            method: "POST",
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+                $(".alert").hide();
+                console.log(data);
+                this_.find("input[type=text], textarea").val("");
+                this_.find("input[type=file]").val("");
+                attachTweet(data, true);
+                updateHashLinks();
+                AttachMedia(data);
+                $("#replyModal").modal("hide");
+                //fetchTweets();
+                //tweetList = data;
+                //parseTweets()
+            },
+            error: function (data) {
+                console.log("error");
+                console.log(data)
+            }
+        });
+        }else{
+            this_.find("input[type=text], textarea").val("");
+            this_.find("input[type=file]").val("");
+            console.log("text too long")
+        }
+    });
+
+}
+
+
+</script>
+
+
+{% block script %}{% endblock script %}
+
+<script>
+    //auto search(dynamic search)
+    // (first needs add id='navbar-search-form' to the form in search_form.html)
+    $(document).ready(function () {
+        var typingTimer;
+        var doneInterval = 800; // in ms
+        var searchInput = $("#navbar-search-form input[type=text]");
+        var searchQuery;
+
+        // when you realese a key(finish typing) the timer is start
+        searchInput.keyup(function (event) {
+            searchQuery = $(this).val();
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(doneSearchTyping, doneInterval); //add the timer
+        });
+
+        //hold key down(typing the text)
+        searchInput.keydown(function (event) {
+            clearTimeout(typingTimer);
+        });
+        function doneSearchTyping() {
+            if(searchQuery){
+                //do search
+                var url = '/search/?q='+ searchQuery;
+                document.location.href = url;
+            }
+        }
+    });
+
+
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>

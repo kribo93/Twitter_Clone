@@ -1,13 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Detail</title>
-</head>
-<body>
-{{ object.content }} <br/>
-{{ object.user }} <br/>
-{{ object.timestamp }} <br/>
- <br/>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %} Detail {% endblock title %}
+
+
+{% block script %}
+
+<script>
+
+$(document).ready(function () {
+    loadTweetContainer("tweet-container", {{ object.id }});
+})
+</script>
+
+{% endblock script %}
+
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-3 col-3 ">
+            <h1>{{ object.user }}</h1>
+        </div>
+        <div class="col-sm-8 col-8 content-block">
+            <div id="tweet-container"></div>
+        </div>
+    </div>
+
+
+
+
+{% endblock content %}
