@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% load static %}
+
+{% block title %} Detail {% endblock title %}
+
+
+{% block script %}
+<script>
+$(document).ready(function () {
+    loadTweetContainer("tweet-container");
+})
+</script>
+{% endblock script %}
+
+{% block headProfileDetail %}
+    <div class="header-banner">
+            <div class="banner">
+            </div>
+            <div class="banner-footer row">
+                <div class="col-md-6 offset-md-4">
+                    <div class="row">
+                        <div class="col-lg-2 tweets">
+                                <span>Tweets</span>
+                                <p>{{ object.profile.get_tweets.count }}</p>
+                            </div>
+                            <div class="col-lg-2 following">
+                                <span>Following</span>
+                                <p>{{ object.profile.get_following.count }}</p>
+                            </div>
+                            <div class="col-lg-2 followers">
+                                <span>Followers</span>
+                                 <p>{{ object.followed_by.all.count }}</p>
+                            </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 follow-button">
+                                <a href="{{ object.profile.get_follow_url }}" class="btn btn-primary">
+                                {% if following %}UnFollow {% else %}Follow {% endif %}</a>
+                </div>
+            </div>
+
+            <div class="avatar">
+                <div class="ProfileAvatar">
+                    {% if object.profile.photo %}
+                        {% thumbnail object.profile.photo "200x200" crop="100% center" as im %}
+                            <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                        {% endthumbnail %}
+                    {% else %}
+                        <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 200px; height: 200px">
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+{% endblock headProfileDetail %}
+
+{% block content %}
+        <div class="row">
+            <div class="col-sm-3 col-3 ">
+                <br/>
+                <h1>{{ object.username }}</h1>
+                <hr/>
+
+                <h3>Following <small>({{ object.profile.get_following.count }})</small></h3>
+                    {% for user in object.profile.get_following %}
+                     <a href="/{{ user.username }}">{{ user.username }}</a>
+                    {% empty %}
+                    <h4>Not following any users</h4>
+                    {% endfor %}
+
+                <hr/>
+                <h3>Followers</h3>
+                    {% for profile in object.followed_by.all %}
+                        <a href="/{{ profile.user.username }}">{{ profile.user.username}}</a>
+                    {% empty %}
+                    <h4>Not followed by any users</h4>
+                    {% endfor %}
+
+
+
+            </div>
+            <div class="col-sm-8 col-8 content-block">
+                <h2>Tweets</h2>
+                <hr/>
+                <div class="" id="tweet-container" data-url="/api/{{ object.username }}/tweet/">
+
+                </div>
+                <a href="#" id="loadmore">Load More Tweets</a>
+            </div>
+
+        </div>
+
+
+
+
+
+{% endblock content %}

@@ -1,2 +1,6 @@
-django==1.11
+django==1.11.15
+djangorestframework==3.8.2
 
+django_crispy_forms==1.7.2
+pillow=5.2.0
+sorl-thumbnail==12.4.1

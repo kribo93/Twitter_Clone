@@ -525,7 +525,11 @@ function loadTweetContainer(tweetContainerID, fetchOneId) {
                 console.log(data);
                 this_.find("input[type=text], textarea").val("");
                 this_.find("input[type=file]").val("");
+<<<<<<< HEAD
                 $(".tweet-form").find('#gallery').empty()
+=======
+                $(".tweet-form").find('#gallery').empty();
+>>>>>>> dev
                 attachTweet(data, true);
                 updateHashLinks();
                 AttachMedia(data);

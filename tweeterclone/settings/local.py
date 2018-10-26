@@ -37,7 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'crispy_forms',
+    'accounts',
     'tweets',
+    'hashtags',
+    'sorl.thumbnail',
+
 ]
 
 MIDDLEWARE = [
@@ -51,6 +57,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tweeterclone.urls'
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
+
 
 TEMPLATES = [
     {
@@ -125,5 +136,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static-storage"),
 ]
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
 # will be served
 STATIC_ROOT = os.path.join(BASE_DIR, "static-serve")
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

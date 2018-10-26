@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+
+{% load static %}
+
+{% block title %} Search{% endblock title %}
+
+{% block script %}
+
+<script>
+$(document).ready(function () {
+    loadTweetContainer("tweet-container");
+})
+</script>
+
+{% endblock script %}
+
+{% block headProfileDetail %}
+    <div class="search-banner">
+            <div class="banner">
+                <div class="container">
+                        <div class="col-sm-12 col-md-6 search-results">
+                            {% if request.GET.q %}
+                                <p class="lead" style="color: white">Results for: {{ request.GET.q }} </p>
+                            {% endif %}
+                        </div>
+                </div>
+            </div>
+    </div>
+
+{% endblock headProfileDetail %}
+
+
+
+{% block content %}
+        <div class="row">
+            <div class="col-sm-6 col-md-6 col-lg-6 content-block">
+            <h1>Tweets</h1>
+                <div class="" id="tweet-container" data-url="/api/search/">
+
+                </div>
+                <a href="#" id="loadmore">Load More Tweets</a>
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-6">
+            <h1>People</h1>
+                <div class="row">
+                    {% for user in users %}
+                        <div class="col-md-6">
+                            <div class="dashboard-left">
+                                <div class="dashboard-profile">
+                                    <div class="banner"></div>
+                                    <div class="avatar">
+                                        <div class="ProfileAvatar">
+                                            {% if user.profile.photo %}
+                                                {% thumbnail user.profile.photo "68x68" crop="100% center" as im %}
+                                                    <a href="{% url 'profiles:detail' user.username %}" >
+                                                        <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                                                    </a>
+
+                                                {% endthumbnail %}
+                                            {% else %}
+                                                <a href="{% url 'profiles:detail' user.username %}" >
+                                                   <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 68px; height: 68px">
+                                                </a>
+
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="profile-info">
+                                    <div class="col-md-6 offset-md-4">
+                                        <a href="{% url 'profiles:detail' user.username %}" ><p class="username">{{ user }}</p></a>
+                                    </div>
+                                    <div class="profile-statistics">
+                                        <div class="container">
+                                            <div class="row">
+                                            <div class="col-lg-6 tweets">
+                                                <span>Tweets</span>
+                                                <p>{{ user.profile.get_tweets.count }}</p>
+                                            </div>
+                                            <div class="col-lg-6 following">
+                                                <span>Following</span>
+                                                <p>{{ user.profile.get_following.count }}</p>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                {% empty %}
+                    <p>No users found</p>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+
+{% endblock content %}
