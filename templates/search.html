@@ -34,66 +34,52 @@ $(document).ready(function () {
 
 {% block content %}
         <div class="row">
-            <div class="col-sm-6 col-md-6 col-lg-6 content-block">
-            <h1>Tweets</h1>
+            {% include 'accounts/snippets/left_dashboard.html' %}
+            <div class="col-12 col-sm-12 col-md-8 col-lg-6 col-xl-6 content-block">
+            <h3>Tweets</h3>
                 <div class="" id="tweet-container" data-url="/api/search/">
 
                 </div>
                 <a href="#" id="loadmore">Load More Tweets</a>
             </div>
-            <div class="col-sm-6 col-md-6 col-lg-6">
-            <h1>People</h1>
-                <div class="row">
+
+            <div class="col-12  col-sm-12 col-md-12 col-lg-3 col-xl-3">
+                <h3>People</h3>
+                <div class="people_search">
                     {% for user in users %}
-                        <div class="col-md-6">
-                            <div class="dashboard-left">
-                                <div class="dashboard-profile">
-                                    <div class="banner"></div>
-                                    <div class="avatar">
-                                        <div class="ProfileAvatar">
-                                            {% if user.profile.photo %}
-                                                {% thumbnail user.profile.photo "68x68" crop="100% center" as im %}
-                                                    <a href="{% url 'profiles:detail' user.username %}" >
-                                                        <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
-                                                    </a>
-
-                                                {% endthumbnail %}
-                                            {% else %}
-                                                <a href="{% url 'profiles:detail' user.username %}" >
-                                                   <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 68px; height: 68px">
-                                                </a>
-
-                                            {% endif %}
-                                        </div>
+                        {% if request.user != user.profile.user %}
+                            <div class="people row">
+                                <a href="{% url 'profiles:detail' user.username %}" >
+                                    <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                                        {% if user.profile.photo %}
+                                                 <img src="{{ user.profile.photo.url}}" class="avatar_thumbnail rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                                        {% else %}
+                                               <img src="{% static 'images/user_default.png' %}" class="avatar_thumbnail rounded-circle"   aria-expanded="false">
+                                        {% endif %}
                                     </div>
+                                </a>
+                                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-5 ">
+                                    <div>
+                                         <a href="{% url 'profiles:detail' user.username %}" ><span class="username">{{ user }}</span></a>
+                                    </div>
+                                    <div >
+                                        <span>Tweets {{ user.profile.get_tweets.count }}</span>
+                                    </div>
+                                    <div >
+                                        <span>Followers  {{ user.followed_by.all.count }}</span>
+                                    </div>
+
                                 </div>
-                                <div class="profile-info">
-                                    <div class="col-md-6 offset-md-4">
-                                        <a href="{% url 'profiles:detail' user.username %}" ><p class="username">{{ user }}</p></a>
-                                    </div>
-                                    <div class="profile-statistics">
-                                        <div class="container">
-                                            <div class="row">
-                                            <div class="col-lg-6 tweets">
-                                                <span>Tweets</span>
-                                                <p>{{ user.profile.get_tweets.count }}</p>
-                                            </div>
-                                            <div class="col-lg-6 following">
-                                                <span>Following</span>
-                                                <p>{{ user.profile.get_following.count }}</p>
-                                            </div>
-                                        </div>
-                                        </div>
-
-                                    </div>
+                                <div class="col-3 col-sm-3 col-md-3 col-lg-3  col-xl-3 follow-button">
+                                        <a href="{{ user.profile.get_follow_url }}" class="btn btn-primary">
+                                        {% if user in request.user.profile.following.all %}UnFollow {% else %}Follow {% endif %}</a>
                                 </div>
                             </div>
-                        </div>
-
-
-                {% empty %}
-                    <p>No users found</p>
-                {% endfor %}
+                        {% endif %}
+                        <hr>
+                    {% empty %}
+                        <p>No users found</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>

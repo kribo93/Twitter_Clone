@@ -18,10 +18,8 @@ $(document).ready(function () {
 {% block content %}
 
     <div class="row">
-        <div class="col-sm-3 col-3 ">
-            <h1>{{ object.user }}</h1>
-        </div>
-        <div class="col-sm-8 col-8 content-block">
+    {% include 'accounts/snippets/left_dashboard.html' %}
+        <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 content-block">
             <div id="tweet-container"></div>
         </div>
     </div>

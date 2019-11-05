@@ -1,50 +1,104 @@
-{% extends "base.html" %}
+{% load static %}
 
-{% block script %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="login_left col-12 col-sm-12 col-md-6 col-lg-6 align-items-center" style=background-color:#1da1f2 >
+                <div class="StaticLoggedOutHomePage-communicationContent">
+                  <div class="StaticLoggedOutHomePage-communicationItem">
+
+                    <span class="StaticLoggedOutHomePage-communicationItem-text"> <i class="fa fa-search" aria-hidden="true"></i>  Follow your interests.</span>
+                  </div>
+                  <div class="StaticLoggedOutHomePage-communicationItem">
+                    <span class="StaticLoggedOutHomePage-communicationItem-text"><i class="fa fa-users" aria-hidden="true"></i> Hear what people are talking about.</span>
+                  </div>
+                  <div class="StaticLoggedOutHomePage-communicationItem">
+                    <span class="StaticLoggedOutHomePage-communicationItem-text"><i class="fa fa-comment-o" aria-hidden="true"></i> Join the conversation.</span>
+                  </div>
+              </div>
+            </div>
+
+            <div class="login_right col-12 col-sm-12 col-md-6 col-lg-6 align-items-center">
+                <nav class="navbar navbar-expand-lg navbar-light ">
+                   <form class="form-inline my-2 my-lg-0" method="post" action="{% url 'login' %}">
+                           {% csrf_token %}
+                           <div class="form-row">
+                                  <div class="col-lg col-md ">
+                                      <input type="text" class="form-control" name="username" placeholder="Username" autofocus="" maxlength="254" required="" id="id_username">
+                                  </div>
+                                  <div class="col-lg col-md ">
+                                      <input type="password"  class="form-control" placeholder="Password" name="password" required="" id="id_password">
+                                      <p><a style="color: #aab8c2" href="{% url 'password_reset' %}">Forgot password?</a></p>
+                                  </div>
+                                  <div class="col-lg col-md-3 ">
+                                     <button class="button_login btn btn-outline-primary my-2 my-sm-0" type="submit">Log In</button>
+                                     <input type="hidden" name="next" value="{{ next }}" />
+                                  </div>
+                           </div>
+                   </form>
+                </nav>
+                        {% if form.errors %}
+                        <p>Your username and password didn't match. Please try again.</p>
+                        {% endif %}
+
+                        {% if next %}
+                            {% if user.is_authenticated %}
+                            <p>Your account doesn't have access to this page. To proceed,
+                            please login with an account that has access.</p>
+                            {% else %}
+                            <p>Please login to see this page.</p>
+                            {% endif %}
+                        {% endif %}
+
+                <div class="container cn">
+                    <div>
+                        <div class="block col-4 col-sm-5 col-md-12 col-lg-12">
+                          <i class="fa fa-3x fa-twitter" style="color: #1DA1F2" aria-hidden="true"></i>
+                        </div>
+                        <div class="block col-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                          <p class="login_text">See what’s happening in the world right now </p>
+                        </div>
+                        <div class="block col-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                            <p class="login_text2">Join Twitter today.</p>
+                            <button type="button" class="blue_button btn btn-primary btn-lg btn-block">Sign Up <a href="{% url 'register' %}"></a></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="container col-12 col-sm-12">
+        <div class="footer text-center">
+            <span class="footer-text">&copy; 2018 TwitterClone</span>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">About</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Terms</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Privacy policy</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Cookies</span></a>
+            <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Ads info</span></a>
+        </div>
+    </div>
+
 <script>
 $(document).ready(function () {
     $('form input').addClass('form-control')
 })
 </script>
-
-{% endblock %}
-{% block content %}
-
-<div class="col-sm-6 offset-sm-3 text-center">
-<h1>Login</h1>
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
-    {% endif %}
-{% endif %}
-
-
-    <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-
-          <div class="form-group">
-            <label >{{ form.username.label_tag }}</label>
-            {{ form.username }}
-          </div>
-          <div class="form-group">
-            <label >{{ form.password.label_tag }}</label>
-            {{ form.password }}
-          </div>
-
-        <button type="submit" class="btn btn-default">Login</button>
-        <input type="hidden" name="next" value="{{ next }}" />
-    </form>
-
-
-
-{# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
-</div>
-{% endblock %}
+</body>

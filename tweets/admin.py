@@ -8,7 +8,7 @@ class TweetMediaInline(admin.TabularInline):
     model = TweetMedia
 
 class TweetModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'content', 'user',)
+    list_display = ('id', 'content', 'user', 'timestamp')
     inlines = [TweetMediaInline]
 
 admin.site.register(Tweet, TweetModelAdmin)

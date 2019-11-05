@@ -25,11 +25,11 @@
     </style>
 </head>
 <body>
+{#{% include 'navbar.html' %}#}
 <div class="page-outer">
-    {% include 'navbar.html' %}
-
     {% block headProfileDetail %}
     {% endblock headProfileDetail %}
+
     <div class="container">
         {% block content %}
         {% endblock content %}
@@ -228,11 +228,11 @@ function loadTweetContainer(tweetContainerID, fetchOneId) {
         tweetTextContainer = "<div class='tweetTextContainer'><span class='content'>" + tweetValue.content +
             "</span></div>";
 
-        tweetFooter = "<div class='tweetFooter row col-lg-6 col-md-6'>" + "<div class='view col-lg-3 col-md-3'>"+
+        tweetFooter = "<div class='tweetFooter row col-12 col-sm-12 col-lg-6 col-md-6'>" + "<div class='view col-3 col-sm-3 col-lg-3 col-md-3'>"+
             "<a href='/tweet/"+ tweetId + "' class='view-button'><i class='fa fa-eye fa-lg grey-color' aria-hidden='true'></i></a></div> " +
-                "<div class='retweet col-lg-3 col-md-3'><a class='retweetBtn' href='/tweet/"+tweetValue.id + "/retweet/'><i class='fa fa-retweet fa-lg grey-color' aria-hidden='true'></i></a></div>" +
-            "<div class='like col-lg-3 col-md-3'><a href='#' class='tweet-like' data-id='" + tweetValue.id + "''>"+icon +"  </a></div>" +
-                "<div class='reply col-lg-3 col-md-3'><a href='#' " +"class='tweet-reply' data-user= '"+ tweetValue.user.username +"' data-id='" +
+                "<div class='retweet col-3 col-sm-3 col-lg-3 col-md-3'><a class='retweetBtn' href='/tweet/"+tweetValue.id + "/retweet/'><i class='fa fa-retweet fa-lg grey-color' aria-hidden='true'></i></a></div>" +
+            "<div class='like col-3 col-sm-3 col-lg-3 col-md-3'><a href='#' class='tweet-like' data-id='" + tweetValue.id + "''>"+icon +"  </a></div>" +
+                "<div class='reply col-3 col-sm-3 col-lg-3 col-md-3'><a href='#' " +"class='tweet-reply' data-user= '"+ tweetValue.user.username +"' data-id='" +
                 replyId + "' data-toggle='modal'><i class='fa fa-comment-o fa-lg grey-color' aria-hidden='true'></i></a></div></div>";
 
 
@@ -325,7 +325,7 @@ function loadTweetContainer(tweetContainerID, fetchOneId) {
                     }
                 var receivingPrefix =  idPrefix + (obj.id);
                 if (media_data.length==1){
-                    media_container.classList.add("AdaptiveMediaContainer");
+                    media_container.classList.add("AdaptiveBox");
                     media_container.classList.remove("row");
                     for (var i = 0; i < media_data.length; i++) {
                         var div = document.createElement('div');
@@ -344,10 +344,13 @@ function loadTweetContainer(tweetContainerID, fetchOneId) {
                 }
 
                 } else if (media_data.length==2){
+                   media_container.classList.add("AdaptiveBox");
                    AttachFiles(media_data, 'PhotoDouble', receivingPrefix);
                 }else if(media_data.length==3){
+                   media_container.classList.add("AdaptiveBox");
                    AttachFiles(media_data, 'PhotoTriple', receivingPrefix);
                 }else if(media_data.length==4){
+                   media_container.classList.add("AdaptiveBox");
                    AttachFiles(media_data, 'PhotoQuad', receivingPrefix);
                 }
             }

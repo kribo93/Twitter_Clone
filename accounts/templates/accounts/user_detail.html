@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load thumbnail %}
 {% load static %}
+{% load recommended %}
+
 
 {% block title %} Detail {% endblock title %}
 
@@ -13,73 +15,44 @@ $(document).ready(function () {
 </script>
 {% endblock script %}
 
-{% block headProfileDetail %}
-    <div class="header-banner">
-            <div class="banner">
-            </div>
-            <div class="banner-footer row">
-                <div class="col-md-6 offset-md-4">
-                    <div class="row">
-                        <div class="col-lg-2 tweets">
-                                <span>Tweets</span>
-                                <p>{{ object.profile.get_tweets.count }}</p>
-                            </div>
-                            <div class="col-lg-2 following">
-                                <span>Following</span>
-                                <p>{{ object.profile.get_following.count }}</p>
-                            </div>
-                            <div class="col-lg-2 followers">
-                                <span>Followers</span>
-                                 <p>{{ object.followed_by.all.count }}</p>
-                            </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 follow-button">
-                                <a href="{{ object.profile.get_follow_url }}" class="btn btn-primary">
-                                {% if following %}UnFollow {% else %}Follow {% endif %}</a>
-                </div>
-            </div>
-
-            <div class="avatar">
-                <div class="ProfileAvatar">
-                    {% if object.profile.photo %}
-                        {% thumbnail object.profile.photo "200x200" crop="100% center" as im %}
-                            <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
-                        {% endthumbnail %}
-                    {% else %}
-                        <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 200px; height: 200px">
-                    {% endif %}
-                </div>
-            </div>
-    </div>
-{% endblock headProfileDetail %}
-
 {% block content %}
         <div class="row">
-            <div class="col-sm-3 col-3 ">
-                <br/>
-                <h1>{{ object.username }}</h1>
+        {% include 'accounts/snippets/left_dashboard.html' %}
+           <div class="col-12 col-sm-12 col-md-8 col-lg-6 content-block">
+               <div class="header-banner">
+                        <div class="banner">
+                            {% if object.profile.photo %}
+                                <img src="{{ object.profile.photo.url}}" class="text-center avatar_thumbnail rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                                {% else %}
+                                    <img src="{% static 'images/user_default.png' %}" class="text-center avatar_thumbnail rounded-circle"   aria-expanded="false" >
+                                {% endif %}
+                        </div>
+                        <div class="banner-footer row">
+                            <div class="col-6 offset-4 col-xs-6 offset-xs-4 col-md-6 offset-md-4 col-xl-6 offset-xl-4 col-lg-6 offset-lg-4">
+                                <div class="row">
+                                    <div class="col-4 col-sm-4 col-md-3 col-lg-3 tweets">
+                                            <span>Tweets</span>
+                                            <p>{{ object.profile.get_tweets.count }}</p>
+                                        </div>
+                                        <div class="col-4 col-sm-4 col-md-3  col-lg-3 following">
+                                            <span>Following</span>
+                                            <p>{{ object.profile.get_following.count }}</p>
+                                        </div>
+                                        <div class="col-4 col-sm-4 col-md-3  col-lg-3 followers">
+                                            <span>Followers</span>
+                                             <p>{{ object.followed_by.all.count }}</p>
+                                        </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 follow-button">
+                            {% if request.user != object.profile.user %}
+                                <a href="{{ object.profile.get_follow_url }}" class="btn btn-primary">
+                                            {% if following %}UnFollow {% else %}Follow {% endif %}</a>
+                            {% endif %}
+                            </div>
+                        </div>
+                </div>
                 <hr/>
-
-                <h3>Following <small>({{ object.profile.get_following.count }})</small></h3>
-                    {% for user in object.profile.get_following %}
-                     <a href="/{{ user.username }}">{{ user.username }}</a>
-                    {% empty %}
-                    <h4>Not following any users</h4>
-                    {% endfor %}
-
-                <hr/>
-                <h3>Followers</h3>
-                    {% for profile in object.followed_by.all %}
-                        <a href="/{{ profile.user.username }}">{{ profile.user.username}}</a>
-                    {% empty %}
-                    <h4>Not followed by any users</h4>
-                    {% endfor %}
-
-
-
-            </div>
-            <div class="col-sm-8 col-8 content-block">
                 <h2>Tweets</h2>
                 <hr/>
                 <div class="" id="tweet-container" data-url="/api/{{ object.username }}/tweet/">
@@ -87,11 +60,30 @@ $(document).ready(function () {
                 </div>
                 <a href="#" id="loadmore">Load More Tweets</a>
             </div>
-
+        <div class=" col-12  col-sm-12 col-md-12 col-lg-3">
+            <br/>
+            {% include 'tweets/search_form.html' %}
+            <div class="dashboard-right">
+                <div class="dashboard-left-inner-footer">
+                <hr/>
+                <br/>
+                <p class="lead" >Who to follow</p>
+                {% recommended request.user %}
+                </div>
+                 <hr/>
+                <br/>
+                <div class="container text-center">
+                    <span class="footer-text">&copy; 2018 TwitterClone</span>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">About</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Terms</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Privacy policy</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Cookies</span></a>
+                    <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Ads info</span></a>
+                </div>
+            </div>
         </div>
 
-
-
-
-
+        </div>
 {% endblock content %}

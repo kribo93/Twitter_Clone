@@ -44,12 +44,15 @@ class UserProfileManager(models.Manager):
         qs = self.get_queryset().exclude(user__in=following).exclude(id=profile.id).order_by("?")[:limit_to]
         return qs
 
+
 """
     Info about 'following' field in 'UserProfile' model:
 
     user.profile.following --> users I follow
     user.followed_by --> user that follow me (reverse relationship)
 """
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')  #user.profile
     following = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True,  related_name='followed_by')
@@ -75,6 +78,7 @@ class UserProfile(models.Model):
 
     def get_absolute_url(self):
         return reverse_lazy ("profiles:detail", kwargs={'username': self.user.username})
+
 
 def post_save_user_receiver(sender, instance, created, *args, **kwargs):
     print(instance)

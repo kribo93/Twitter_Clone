@@ -97,7 +97,7 @@ class TweetListAPIView(generics.ListAPIView):
         return qs
 
 class SearchTweetAPIView(generics.ListAPIView):
-    queryset = Tweet.objects.all().order_by("timestamp")
+    queryset = Tweet.objects.all().order_by("-timestamp")
     serializer_class = TweetModelSerializer
     pagination_class = StandartResultsPagination
 

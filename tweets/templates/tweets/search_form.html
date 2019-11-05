@@ -1,8 +1,8 @@
 <form id="navbar-search-form" class="form-inline my-2 my-lg-0 mr-auto" method="get" action="{% url "search" %}">
-    <div class="form-group">
+    <div class="form-group container-fluid">
         <input class="form-control mr-sm-2" type="text" name="q" placeholder="Your search" value="{{ request.GET.q }}"/>
     </div>
-    <button class="btn btn-primary my-2 my-sm-0" type="submit" >Search</button>
+{#    <button class="btn btn-primary my-2 my-sm-0" type="submit" >Search</button>#}
 </form>
 
 

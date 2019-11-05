@@ -1,55 +1,154 @@
+@media (min-width: 992px) {
+    .block{
+        padding-top: 10%;
+    }
+}
+
+@media (max-width: 770px) {
+    .block{
+        padding-top: 5%;
+    }
+    .username_info {
+    font-weight: bold;
+    color: black;
+    margin-left: 25%;
+    }
+    .left-navbar {
+        display: none;
+    }
+
+}
+@media (min-width: 500px) {
+    .avatar_thumbnail{
+    height: 8vw!important;
+    width: 8vw!important;
+}
+    .upload{
+    margin-left: 65%!important;
+    }
+    .form_thumbnail {
+       right: -3px;
+    }
+}
+
+
+@media (min-width: 300px) {
+    /*.form_button > input {*/
+    /*margin-top: 5px;*/
+    /*padding-right: 10px;*/
+    /*}*/
+
+}
+
+
 @media (min-width: 1024px){
     .container {
     width: 1190px;
     max-width: 100%;
                 }
-    .PhotoTriple {
-        height: 360px;
-        width: 535px
-    }
 
-    .PhotoQuad{
-    height: 402px;
-    width: 535px;
-    }
-
-    .PhotoDouble{
-    height: 267px;
-    width: 535px;
-    }
-
-    .PhotoSingle{
-    /*height: 535px;*/
-    width: 535px;
-    /*padding-right: 10px;*/
-    }
 }
 
-@media screen and (max-width: 768px){
+@media (min-width: 1300px){
+    .AdaptiveBox {
+    width: 99%;
+    height: 25vw !important;
+    }
+
+}
+
+.svg_icon {
+    width: auto;
+    height: 2rem;
+    fill: rgba(29, 161, 242, 1.00);
+}
+
+.dropdown-toggle::after {
+    content: none!important;
+}
+
+
+.img-OnlyOne {
+        height: 100%;
+        width: 100%;
+    }
+
+.PhotoSingle {
+    -ms-flex: 25%; /* IE10 */
+    flex: 25%;
+    max-width: 100%;
+    height: 100%;
+    padding: 0 2px;
+}
+
+.form_button > input{
+    margin-top: 5px;
+}
+
+
+@media screen and (max-width: 1023px){
     .container {
     width: 780px;
     max-width: 100%;
                 }
-    .PhotoTriple {
-        height: 232px;
-        width: 345px
-    }
+}
 
-    .PhotoQuad{
-    height: 259px;
-    width: 345px;
-    }
 
-    .PhotoDouble{
-    height: 172px;
-    width: 345px;
-    }
+.AdaptiveBox {
+    width: 99%;
+    height: 35vw;
+}
 
-    .PhotoSingle{
-    height: 345px;
-    width: 345px;
-    padding-right: 10px;
-    }
+.StaticLoggedOutHomePage-communicationItem{
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 24px;
+    margin: 48px auto 48px auto;
+}
+.StaticLoggedOutHomePage-communicationItem-text{
+    color: #fff;
+}
+.login_text{
+    /*font-size: 27px;*/
+    font-size: 2.2vw;
+    line-height: 32px;
+    font-weight: bold;
+}
+.login_text2{
+    font-size: 1.3vw;
+    line-height: 32px;
+    font-weight: bold;
+}
+
+/*.block{*/
+/*    padding-top: 25%;*/
+/*}*/
+
+.blue_button{
+    background-color: #1DA1F2
+}
+.cn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.button_login {
+    border-radius: 40%;}
+
+.login_left{
+   height: 90vh;
+   display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.login_right{
+   height: 90vh;
+   display: flex;
+   flex-direction: column;
 }
 
 .footer-text{
@@ -57,13 +156,16 @@
     font-size: 12px;
 }
 
+
+
 .username{
     font-weight: bold;
     color: black;
 }
+
 .banner{
-    background-color: #1DA1F2;
-    height: 175px;
+    background-color: rgb(204, 214, 221);;
+    height: 10vw;
 }
 
 .dashboard-profile .banner{
@@ -94,6 +196,13 @@
     height: 60%;
     width: 100%;
 }
+
+.people .avatar_thumbnail{
+    position: relative;
+    height: 3vw!important;
+    width: 3vw!important;
+}
+
 
 .dashboard-profile .avatar{
     top: 45px;
@@ -131,17 +240,30 @@
     width: 200px;
 }
 
+.avatar_thumbnail{
+    left: 7%;
+    bottom: -50%;
+    /*top: 50%;*/
+    position: relative;
+    height: 13vw;
+    width: 13vw;
+}
+
+.header-banner{
+    position: relative;
+}
+
 .avatar{
-    top: 100px;
+    /*top: 10px;*/
     left: 15%;
-    position: absolute;
+    position: relative;
     transition: bottom .3s;
     z-index: 3;
 }
 
 .avatar-mini{
     position: absolute;
-    left: 0;
+    left: 2px;
     width: 45px;
     height: 45px;
 
@@ -167,9 +289,33 @@
     height: 208px;
 }
 
-.form-block{
-    background-color: #E8F5FD;
+.dashboard-left-inner-footer{
+    padding-left: 5%;
 }
+
+.form-block{
+    border-bottom-width: 1vw;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+/*.form_thumbnail{*/
+/*    position: absolute;*/
+/*    top: 15%;*/
+/*    margin-left: auto;*/
+/*    margin-right: auto;*/
+/*    height: 5vw;*/
+/*    width: 5vw;*/
+/*}*/
+
+.form_thumbnail{
+    position: absolute;
+    top: 20px;
+    /*right: -3px;*/
+    width: 55px;
+    height: 55px;
+}
+
 
 .tweet-form{
     padding: 10px;
@@ -186,8 +332,15 @@
 .content-block{
     padding: 0;
     margin-top: 10px;
-   background-color: white;
+    background-color: white;
     display: block;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: rgba(0, 0, 0, 0.1);
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: rgba(0, 0, 0, 0.1);
+
 }
 
 .media-container {
@@ -204,11 +357,6 @@
     margin-left: 50px;
 }
 
-.page-outer{
-    min-height: 100vmin;
-    background-color: #e6ecf0;
-
-}
 
 .img-OnlyOne{
     object-fit: cover;
@@ -250,6 +398,7 @@
 .PhotoTriple .secondary-media {
     -ms-flex: 25%; /* IE10 */
     flex: 25%;
+    height: 100%;
     max-width: 35%;
     padding: 0 2px;
 }
@@ -274,13 +423,14 @@
 .PhotoQuad .main-media {
     -ms-flex: 25%; /* IE10 */
     flex: 25%;
-    max-width: 75%;
+    max-width: 70%;
     max-height: 100%;
     padding: 0 2px;
 }
 
 .PhotoQuad .main-media a>img{
-    height: 99.9%;
+    height: 100%;
+    width: fit-content;
     object-fit: cover;
 }
 
@@ -319,6 +469,9 @@
 
 }
 
+.upload{
+    margin-left: 55%;
+}
 
 .upload > input
 {
@@ -328,13 +481,9 @@
 .upload img
 {
     margin-top: 9px;
-
     width: 30px;
     height: 30px;
 
-}
-.form_button > input{
-    margin-top: 5px;
 }
 
 .extras .row{

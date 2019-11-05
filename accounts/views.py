@@ -7,8 +7,10 @@ from django.views.generic.edit import FormView
 # Create your views here.
 from .forms import UserRegisterForm
 from .models import UserProfile
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 User = get_user_model()
+
 
 class UserRegisterView(FormView):
     form_class = UserRegisterForm
@@ -25,7 +27,8 @@ class UserRegisterView(FormView):
         return super(UserRegisterView, self).form_valid(form)
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, DetailView):
+    login_url = '/login/'
     template_name = 'accounts/user_detail.html'
     model = User
 
@@ -40,6 +43,7 @@ class UserDetailView(DetailView):
         context['following'] = following
         context['recommended'] = UserProfile.objects.recommended(self.request.user)
         return context
+
 
 class UserFollowView(View):
     def get(self, request, username, *args, **kwargs):

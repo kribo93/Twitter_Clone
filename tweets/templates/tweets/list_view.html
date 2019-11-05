@@ -8,70 +8,101 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-sm-3 col-md-3 col-3">
+        <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 container-fluid">
             <div class="dashboard-left">
-                <div class="dashboard-profile">
-                    <div class="banner"></div>
-                    <div class="avatar">
-                        <div class="ProfileAvatar">
-                            {% if request.user.profile.photo %}
-                                {% thumbnail request.user.profile.photo "68x68" crop="100% center" as im %}
-                                    <a href="{% url 'profiles:detail' request.user.username %}" >
-                                        <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
-                                    </a>
-
-                                {% endthumbnail %}
-                            {% else %}
-                                <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 68px; height: 68px">
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-info">
-                    <div class="col-md-6 offset-md-4">
-                        <a href="{% url 'profiles:detail' request.user.username %}" ><p class="username">{{ request.user }}</p></a>
-                    </div>
-                    <div class="profile-statistics">
-                        <div class="container">
+                <div class="navboard">
+                    <div class="button">
+                        <a class="navbar-brand" href="{% url 'home' %}">
                             <div class="row">
-                            <div class="col-lg-6 tweets">
-                                <span>Tweets</span>
-                                <p>{{ request.user.profile.get_tweets.count }}</p>
+                                <div class="icon col-12 cols-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                    <svg class="svg_icon" viewBox="0 0 23 23"><g>
+                                    <path d="M22.58 7.35L12.475 1.897c-.297-.16-.654-.16-.95 0L1.425 7.35c-.486.264-.667.87-.405 1.356.18.335.525.525.88.525.16 0 .324-.038.475-.12l.734-.396 1.59 11.25c.216 1.214 1.31 2.062 2.66 2.062h9.282c1.35 0 2.444-.848 2.662-2.088l1.588-11.225.737.398c.485.263 1.092.082 1.354-.404.263-.486.08-1.093-.404-1.355zM12 15.435c-1.795 0-3.25-1.455-3.25-3.25s1.455-3.25 3.25-3.25 3.25 1.455 3.25 3.25-1.455 3.25-3.25 3.25z">
+                                    </path></g></svg>
+                                </div>
+                                <div class="words  align-self-center col-12 cols-sm-12 col-md-8 col-lg-8 col-xl-8">
+                                    <h3> Home</h3>
+                                </div>
                             </div>
-                            <div class="col-lg-6 following">
-                                <span>Following</span>
-                                <p>{{ request.user.profile.get_following.count }}</p>
+                        </a>
+                    </div>
+                    <div class="button">
+                        <a class="navbar-brand" href="{% url 'profiles:detail' request.user.username %}" >
+                            <div class="row">
+                                <div class="icon col-12 cols-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                    {% if request.user.profile.photo %}
+                                        {% thumbnail request.user.profile.photo "32x32" crop="100% center" as im %}
+                                            <img src="{{ im.url}}" class="rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                                        {% endthumbnail %}
+                                    {% else %}
+                                        <img src="{% static 'images/user_default.png' %}" class="rounded-circle"   aria-expanded="false" style="width: 32px; height: 32px">
+                                    {% endif %}
+                                </div>
+                                <div class="words  align-self-center col-12 cols-sm-12 col-md-8 col-lg-8 col-xl-8">
+                                    <h3>Profile</h3>
+                                </div>
                             </div>
+                        </a>
+                    </div>
+                    <div class="dropdown">
+                      <a class="navbar-brand dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="row">
+                                <div class="icon col-11 cols-sm-11 col-md-3 col-lg-3 col-xl-3">
+                                    <svg viewBox="0 0 23 23" class="svg_icon"><g>
+                                     <path d="M16.5 10.25c-.965 0-1.75.787-1.75 1.75s.784 1.75 1.75 1.75c.964 0 1.75-.786 1.75-1.75s-.786-1.75-1.75-1.75zm0 2.5c-.414 0-.75-.336-.75-.75 0-.413.337-.75.75-.75s.75.336.75.75c0 .413-.336.75-.75.75zm-4.5-2.5c-.966 0-1.75.787-1.75 1.75s.785 1.75 1.75 1.75 1.75-.786 1.75-1.75-.784-1.75-1.75-1.75zm0 2.5c-.414 0-.75-.336-.75-.75 0-.413.337-.75.75-.75s.75.336.75.75c0 .413-.336.75-.75.75zm-4.5-2.5c-.965 0-1.75.787-1.75 1.75s.785 1.75 1.75 1.75c.964 0 1.75-.786 1.75-1.75s-.787-1.75-1.75-1.75zm0 2.5c-.414 0-.75-.336-.75-.75 0-.413.337-.75.75-.75s.75.336.75.75c0 .413-.336.75-.75.75z"></path><path d="M12 22.75C6.072 22.75 1.25 17.928 1.25 12S6.072 1.25 12 1.25 22.75 6.072 22.75 12 17.928 22.75 12 22.75zm0-20C6.9 2.75 2.75 6.9 2.75 12S6.9 21.25 12 21.25s9.25-4.15 9.25-9.25S17.1 2.75 12 2.75z">
+                                    </path></g></svg>
+                                </div>
+                                <div class="words  align-self-center col-11 cols-sm-11 col-md-8 col-lg-8 col-xl-8">
+                                    <h3> More</h3>
+                                </div>
                         </div>
-                        </div>
-
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          <a class="dropdown-item" href="{{ request.user.profile.get_absolute_url }}">Profile</a>
+                          <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                          <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Something else here</a>
+                      </div>
                     </div>
                 </div>
             </div>
-            <div class="dashboard-left-footer">
-                <hr/>
-                <br/>
-                <p class="lead">Recommended Users</p>
-                {% recommended request.user %}
-            </div>
-
         </div>
-        <div class="col-sm-6 col-md-6 col-6 content-block">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-6 content-block">
             {% if not request.GET.q %}
             <div class="form-block" id="tweet-form-block">
-                {% include 'tweets/form.html' with form=create_form action_url=create_url btn_title='Tweet' form_class='tweet-form' %}
+                <div class="row">
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                        {% if request.user.profile.photo %}
+                             <img src="{{ request.user.profile.photo.url}}" class="form_thumbnail rounded-circle " aria-haspopup="true" aria-expanded="false" >
+                        {% else %}
+                             <img src="{% static 'images/user_default.png' %}" class="form_thumbnail rounded-circle"   aria-expanded="false" >
+                        {% endif %}
+                    </div>
+                    <div class="col-10 col-sm-10 col-md-10  col-lg-10 col-xl-10">
+                        {% include 'tweets/form.html' with form=create_form action_url=create_url btn_title='Tweet' form_class='tweet-form' %}
+                    </div>
+                </div>
             </div>
-                <hr/>
             {% endif %}
-
+            <br/>
             <div class="" id="tweet-container" data-url="/api/tweet/">
 
             </div>
             <a href="#" id="loadmore"><div><span class="offset-4">Load More Tweets</span></div></a>
         </div>
-        <div class="col-sm-3 col-md-3 col-3">
+
+        <div class="left-navbar col-12  col-sm-12 col-md-12 col-lg-3">
+            <br/>
+            {% include 'tweets/search_form.html' %}
             <div class="dashboard-right">
-                <div class="container">
+                <div class="dashboard-left-inner-footer">
+                <hr/>
+                <br/>
+                <p class="lead" >Who to follow</p>
+                {% recommended request.user %}
+                </div>
+                 <hr/>
+                <br/>
+                <div class="container text-center">
                     <span class="footer-text">&copy; 2018 TwitterClone</span>
                     <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">About</span></a>
                     <a class="Footer-link" href="#" rel="noopener"><span class="footer-text">Help Center</span></a>
